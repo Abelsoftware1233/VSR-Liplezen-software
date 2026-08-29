@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Speech Recognition</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>👄 Visual Speech Recognition</h1>
+    <p class="subtitle">Upload a silent video. Mouth movement is transcribed to text — no audio is read.</p>
+
+    <div id="apiStatus" class="status-banner status-checking">
+      Checking connection to local API on port 6040...
+    </div>
+
+    <details class="accuracy-note">
+      <summary>⚠️ Accuracy expectations — please read</summary>
+      <p>
+        This app uses open-source pretrained models
+        (<a href="https://github.com/mpc001/auto_avsr" target="_blank" rel="noopener">Auto-AVSR</a>,
+        optionally <a href="https://github.com/facebookresearch/av_hubert" target="_blank" rel="noopener">AV-HuBERT</a>).
+        Even the best published result is around <strong>20% word error rate</strong> on clean,
+        well-lit, front-facing video — meaning roughly 1 in 5 words can be wrong.
+        Poor lighting, side angles, facial hair, or fast speech make this worse.
+        <strong>English only.</strong> See <code>docs/ACCURACY_NOTES.md</code> for details.
+      </p>
+    </details>
+
+    <div class="upload-box">
+      <input type="file" id="videoInput" accept="video/mp4,video/quicktime,video/x-msvideo,video/x-matroska" />
+      <label>
+        <input type="checkbox" id="useSecondary" />
+        Also run AV-HuBERT and combine results (slower, may slightly improve accuracy)
+      </label>
+    </div>
+
+    <video id="preview" controls style="display:none;"></video>
+
+    <button id="transcribeBtn" disabled>Transcribe</button>
+
+    <div id="progress" class="progress" style="display:none;">
+      <div class="spinner"></div>
+      <span>Running face tracking, ROI extraction, and transcription... this can take a while on CPU.</span>
+    </div>
+
+    <div id="errorBox" class="error-box" style="display:none;"></div>
+
+    <section id="resultBox" class="result-box" style="display:none;">
+      <h2>Transcript</h2>
+      <p id="finalTranscript" class="final-transcript"></p>
+      <button id="downloadBtn">Download transcript (.txt)</button>
+
+      <details class="raw-output">
+        <summary>Raw model output (before language model correction)</summary>
+        <p><strong>Auto-AVSR:</strong> <span id="primaryTranscript"></span></p>
+        <p id="secondaryRow" style="display:none;"><strong>AV-HuBERT:</strong> <span id="secondaryTranscript"></span></p>
+      </details>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
