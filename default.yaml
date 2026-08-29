@@ -1,0 +1,20 @@
+# Default VSR configuration[span_3](start_span)[span_3](end_span)
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  enable_cors: true
+
+models:
+  # Supported wrappers: auto_avsr, av_hubert[span_4](start_span)[span_4](end_span)
+  active_model: "auto_avsr" 
+  weights_dir: "./model_weights[span_5](start_span)"[span_5](end_span)
+  enable_lm_rescore: true[span_6](start_span)[span_6](end_span)
+
+video_processing:
+  # Pipeline utilities[span_7](start_span)[span_7](end_span)
+  enable_face_tracking: true 
+  roi_extraction:
+    crop_size: 96
+    target_fps: 25
+    
