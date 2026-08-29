@@ -1,0 +1,26 @@
+# Python environment and cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.env
+
+# Java / Maven (for desktop-java module)[span_1](start_span)[span_1](end_span)
+target/
+*.class
+*.jar
+*.war
+
+# VSR Model Weights & Data[span_2](start_span)[span_2](end_span)
+model_weights/
+*.pt
+*.pth
+*.onnx
+*.h5
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
