@@ -1,20 +1,46 @@
-# Default VSR configuration[span_3](start_span)[span_3](end_span)
+# Default configuration for the VSR pipeline
+# Tune these for your camera setup / hardware
 
-api:
-  host: "0.0.0.0"
-  port: 8000
-  enable_cors: true
+device: "cpu"   # "cpu" or "cuda" — set to "cuda" only if you have an NVIDIA GPU + CUDA installed
+
+video:
+  target_fps: 25          # Auto-AVSR / AV-HuBERT were trained at 25fps; video is resampled to match
+  max_duration_seconds: 60  # safety cap so a huge upload doesn't hang the app on CPU
+
+face_tracking:
+  backend: "mediapipe"    # mediapipe | dlib (dlib is a slower fallback, see utils/face_tracking.py)
+  min_detection_confidence: 0.5
+  min_tracking_confidence: 0.5
+
+roi:
+  crop_size: [96, 96]     # standard Auto-AVSR mouth ROI size
+  grayscale: true
+  normalize: true
 
 models:
-  # Supported wrappers: auto_avsr, av_hubert[span_4](start_span)[span_4](end_span)
-  active_model: "auto_avsr" 
-  weights_dir: "./model_weights[span_5](start_span)"[span_5](end_span)
-  enable_lm_rescore: true[span_6](start_span)[span_6](end_span)
+  primary:
+    name: "auto_avsr"
+    checkpoint: "model_weights/auto_avsr/lrs3_v_wer19.1.pth"
+    config: "model_weights/auto_avsr/lrs3_v_wer19.1.ini"
 
-video_processing:
-  # Pipeline utilities[span_7](start_span)[span_7](end_span)
-  enable_face_tracking: true 
-  roi_extraction:
-    crop_size: 96
-    target_fps: 25
-    
+  secondary_ensemble:
+    enabled: false          # set true to also run AV-HuBERT and combine outputs (slower, CPU-heavy)
+    name: "av_hubert"
+    checkpoint: "model_weights/av_hubert/large_lrs3.pt"
+
+language_model:
+  enabled: false           # tijdelijk uit: het lm_en_subword.arpa bestand kwam uit
+                           # dezelfde inmiddels-onbereikbare derde-partij repo als het
+                           # primaire model (zie download_models.py voor uitleg) en
+                           # wordt niet automatisch gedownload. Kern-transcriptie werkt
+                           # hier niet van afhankelijk. Zet terug op true zodra je
+                           # zelf een geldige lm_en_subword.arpa hebt gevonden/geplaatst.
+  backend: "subword_ngram"   # subword_ngram | none
+  lm_path: "model_weights/language_models/lm_en_subword"
+  # Optional: point this at a local Ollama model for stronger rescoring,
+  # e.g. "ollama:qwen3:4b" — requires Ollama installed and running locally.
+  llm_rescoring: null
+
+decoding:
+  beam_size: 20
+  max_output_length: 200
